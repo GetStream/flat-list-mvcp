@@ -10,7 +10,7 @@ We built this wrapper for our in-house project, but we are making it public, in 
 ## Installation
 
 ```sh
-yarn add maintained-content-visible-position-flat-list
+yarn add @stream-io/flat-list-mvcp
 ```
 
 ## Usage
