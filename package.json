@@ -35,13 +35,13 @@
     "ios",
     "android"
   ],
-  "repository": "https://github.com/vishalnarkhede/mvcp-scroll-view-manager",
+  "repository": "https://github.com/GetStream/flat-list-mvcp",
   "author": "vishtree <vishalnarkhede.iitd@gmail.com> (https://github.com/vishalnarkhede)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/vishalnarkhede/mvcp-scroll-view-manager/issues"
+    "url": "https://github.com/GetStream/flat-list-mvcp/issues"
   },
-  "homepage": "https://github.com/vishalnarkhede/mvcp-scroll-view-manager#readme",
+  "homepage": "https://github.com/GetStream/flat-list-mvcp#readme",
   "devDependencies": {
     "@commitlint/config-conventional": "^8.3.4",
     "@react-native-community/bob": "^0.16.2",
