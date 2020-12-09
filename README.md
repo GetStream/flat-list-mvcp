@@ -31,7 +31,8 @@ import { FlatList, ScrollView } from 'maintained-content-visible-position-flat-l
         autoscrollToTopThreshold: 10,
         minIndexForVisible: 1,
     }}
->
+    ...
+/>
 
 ```
 
