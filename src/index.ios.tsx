@@ -1,3 +1,3 @@
-import { FlatList } from 'react-native';
+import { FlatList, ScrollView } from 'react-native';
 
-export { FlatList };
+export { FlatList, ScrollView };
