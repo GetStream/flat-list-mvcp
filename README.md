@@ -16,7 +16,7 @@ yarn add @stream-io/flat-list-mvcp
 ## Usage
 
 ```js
-import { FlatList, ScrollView } from 'maintained-content-visible-position-flat-list';
+import { FlatList, ScrollView } from '@stream-io/flat-list-mvcp';
 
 <FlatList
     maintainVisibleContentPosition={{
