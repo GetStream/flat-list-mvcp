@@ -50,6 +50,7 @@ public class MvcpScrollViewManagerModule extends ReactContextBaseJavaModule {
           final UIManagerModuleListener uiManagerModuleListener = new UIManagerModuleListener() {
             private int prevFirstVisibleTop = 0;
             private View firstVisibleView = null;
+            private int currentScrollY = 0;
             @Override
             public void willDispatchViewUpdates(final UIManagerModule uiManagerModule) {
               uiManagerModule.prependUIBlock(new UIBlock() {
@@ -57,19 +58,17 @@ public class MvcpScrollViewManagerModule extends ReactContextBaseJavaModule {
                 public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
                   ReactViewGroup mContentView = (ReactViewGroup)scrollView.getChildAt(0);
                   if (mContentView == null) return;
-                  if (scrollView.getScrollY() <= autoscrollToTopThreshold) {
-                    prevFirstVisibleTop = 0;
-                    firstVisibleView = null;
-                    return;
-                  }
+
+                  currentScrollY = scrollView.getScrollY();
+
                   for (int ii = minIndexForVisible; ii < mContentView.getChildCount(); ++ii) {
-                  View subview = mContentView.getChildAt(ii);
-                  if (subview.getTop() >= scrollView.getScrollY()) {
-                    prevFirstVisibleTop = subview.getTop();
-                    firstVisibleView = subview;
-                    break;
+                    View subview = mContentView.getChildAt(ii);
+                    if (subview.getTop() >= currentScrollY) {
+                      prevFirstVisibleTop = subview.getTop();
+                      firstVisibleView = subview;
+                      break;
+                    }
                   }
-                }
                 }
               });
 
@@ -77,9 +76,18 @@ public class MvcpScrollViewManagerModule extends ReactContextBaseJavaModule {
                 @Override
                 public void onLayoutUpdated(ReactShadowNode root) {
                   if (firstVisibleView == null) return;
+
                   int deltaY = firstVisibleView.getTop() - prevFirstVisibleTop;
-                  if (Math.abs(deltaY) > 0) {
-                    scrollView.setScrollY(scrollView.getScrollY() + deltaY);
+
+
+                  if (Math.abs(deltaY) > 1) {
+                    boolean isWithinThreshold = currentScrollY <= autoscrollToTopThreshold;
+                    scrollView.setScrollY(currentScrollY + deltaY);
+
+                    // If the offset WAS within the threshold of the start, animate to the start.
+                    if (isWithinThreshold) {
+                      scrollView.smoothScrollTo(scrollView.getScrollX(), 0);
+                    }
                   }
                   uiManagerModule.getUIImplementation().removeLayoutUpdateListener();
                 }

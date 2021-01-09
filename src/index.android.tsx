@@ -38,9 +38,9 @@ const FlatListComponent = React.forwardRef(
       ) {
         const mvcp = {
           autoscrollToTopThreshold: 0,
+          minIndexForVisible: 0,
           ...maintainVisibleContentPosition,
         };
-
         const viewTag = findNodeHandle(flRef.current);
         cleanupPromise = MvcpScrollViewManager.enableMaintainVisibleContentPosition(
           viewTag,
