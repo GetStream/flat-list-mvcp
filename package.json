@@ -24,7 +24,6 @@
     "typescript": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "lint-fix": "prettier --write 'src/**/*.{js,ts,tsx,md,json}' && eslint --fix 'src/**/*.{js,ts,tsx,md}' --max-warnings 0 && stylelint --fix 'src/**/*.{js,ts,tsx}'",
-    "prepare": "bob build",
     "release": "release-it",
     "example": "yarn --cwd example",
     "pods": "cd example && pod-install --quiet",
