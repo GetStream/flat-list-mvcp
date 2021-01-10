@@ -1148,9 +1148,10 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@stream-io/flat-list-mvcp@link:..":
-  version "0.0.0"
-  uid ""
+"@stream-io/flat-list-mvcp@0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@stream-io/flat-list-mvcp/-/flat-list-mvcp-0.0.3.tgz#d1f8ab27345e265c6f1fa38311bfdb8c589e12c1"
+  integrity sha512-aAnlo4ZmFTJdkVj7godjlNj7gS9s9UdcoNZ2hRSaCpvmETXYQGRGpT5PFMjFl9FuyUI7Uy0jLQerGpVRJBfiCw==
 
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.7":
   version "7.1.12"
