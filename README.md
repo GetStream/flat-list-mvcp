@@ -6,7 +6,19 @@ We built this wrapper for our in-house [react-native chat sdk](https://github.co
 
 **Credits**: Thanks to [stackia](https://github.com/stackia) for https://github.com/facebook/react-native/pull/29466#issuecomment-664367382
 
+## Example
 
+```sh
+#  clone the repo
+git clone https://github.com/GetStream/flat-list-mvcp.git
+cd flat-list-mvcp/Example
+
+# Install npm and pod dependencies
+yarn; npx pod-install;
+
+# run the app
+npx react-native run-android
+```
 ## Installation
 
 ```sh

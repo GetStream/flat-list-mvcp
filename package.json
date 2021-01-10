@@ -1,6 +1,6 @@
 {
   "name": "@stream-io/flat-list-mvcp",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "`maintainVisibleContentPosition` support for Android react-native",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -24,7 +24,6 @@
     "typescript": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "lint-fix": "prettier --write 'src/**/*.{js,ts,tsx,md,json}' && eslint --fix 'src/**/*.{js,ts,tsx,md}' --max-warnings 0 && stylelint --fix 'src/**/*.{js,ts,tsx}'",
-    "prepare": "bob build",
     "release": "release-it",
     "example": "yarn --cwd example",
     "pods": "cd example && pod-install --quiet",
