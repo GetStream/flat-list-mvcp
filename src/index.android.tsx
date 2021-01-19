@@ -1,12 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import {
-  NativeModules,
   FlatList,
+  ScrollView,
+  NativeModules,
   FlatListProps,
   Platform,
   findNodeHandle,
   ScrollViewProps,
-  ScrollView,
 } from 'react-native';
 
 export const MvcpScrollViewManager = NativeModules.MvcpScrollViewManager;
@@ -25,8 +25,8 @@ export type ScrollViewComponentPropType = ScrollViewProps & {
 };
 
 const FlatListComponent = React.forwardRef(
-  (props: FlatListComponentPropType, forwardedRef) => {
-    const flRef = useRef<FlatList>(null);
+  (props: FlatListComponentPropType, forwardedRef: any) => {
+    const flRef = forwardedRef;
     const { extraData, maintainVisibleContentPosition } = props;
 
     useEffect(() => {
@@ -59,19 +59,15 @@ const FlatListComponent = React.forwardRef(
     return (
       <FlatList
         {...props}
-        ref={(ref) => {
-          // @ts-ignore
-          flRef.current = ref;
-          typeof forwardedRef === 'function' && forwardedRef(ref);
-        }}
+        ref={forwardedRef}
       />
     );
   }
 );
 
 const ScrollViewComponent = React.forwardRef(
-  (props: ScrollViewComponentPropType, forwardedRef) => {
-    const svRef = useRef<ScrollView>(null);
+  (props: ScrollViewComponentPropType, forwardedRef: any) => {
+    const svRef = forwardedRef;
     const { maintainVisibleContentPosition } = props;
 
     useEffect(() => {
@@ -104,11 +100,7 @@ const ScrollViewComponent = React.forwardRef(
     return (
       <ScrollView
         {...props}
-        ref={(ref) => {
-          // @ts-ignore
-          svRef.current = ref;
-          typeof forwardedRef === 'function' && forwardedRef(ref);
-        }}
+        ref={forwardedRef}
       />
     );
   }
