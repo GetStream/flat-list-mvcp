@@ -22,7 +22,6 @@ const ListItem = ({item}) => (
 
 const App = () => {
   const [numbers, setNumbers] = useState(Array.from(Array(10).keys()));
-  const [scrollY, setScrollY] = useState(0);
 
   const addToEnd = () => {
     setNumbers((prev) => {
@@ -50,7 +49,6 @@ const App = () => {
       <View style={styles.listContainer}>
         <FlatList
           data={numbers}
-          onScroll={(e) => setScrollY(e.nativeEvent.contentOffset.y)}
           inverted
           keyExtractor={(item) => item.toString()}
           maintainVisibleContentPosition={{
@@ -89,7 +87,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 8,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
 });
 
