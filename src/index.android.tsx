@@ -1,5 +1,5 @@
-import FlatList from './Lists/FlatList';
-import ScrollView from './Lists/ScrollView';
+import FlatList from './FlatList';
+import ScrollView from './ScrollView';
 
 export { FlatList };
 export { ScrollView };
