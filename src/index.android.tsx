@@ -11,8 +11,8 @@ import {
 
 export const MvcpScrollViewManager = NativeModules.MvcpScrollViewManager;
 
-export type maintainVisibleContentPositionPropType = null | {
-  autoscrollToTopThreshold?: number | null;
+export type maintainVisibleContentPositionPropType = {
+  autoscrollToTopThreshold?: number;
   minIndexForVisible: number;
 };
 
@@ -27,34 +27,55 @@ export type ScrollViewComponentPropType = ScrollViewProps & {
 const FlatListComponent = React.forwardRef(
   (props: FlatListComponentPropType, forwardedRef) => {
     const flRef = useRef<FlatList>(null);
-    const { extraData, maintainVisibleContentPosition } = props;
+
+    const { extraData, maintainVisibleContentPosition: mvcp } = props;
+    const autoscrollToTopThreshold = useRef<number>();
+    const minIndexForVisible = useRef<number>();
 
     useEffect(() => {
       let cleanupPromise: Promise<number> | undefined;
-      if (
-        flRef.current &&
-        Platform.OS === 'android' &&
-        maintainVisibleContentPosition
-      ) {
-        const mvcp = {
-          autoscrollToTopThreshold: 0,
-          minIndexForVisible: 0,
-          ...maintainVisibleContentPosition,
-        };
-        const viewTag = findNodeHandle(flRef.current);
-        cleanupPromise = MvcpScrollViewManager.enableMaintainVisibleContentPosition(
-          viewTag,
-          mvcp.autoscrollToTopThreshold,
-          mvcp.minIndexForVisible
-        );
-      }
+      const enableMaintainVisibleContentPosition = (): void => {
+        if (!mvcp || Platform.OS !== 'android') return;
+
+        if (
+          autoscrollToTopThreshold.current === mvcp.autoscrollToTopThreshold &&
+          minIndexForVisible.current === mvcp.minIndexForVisible
+        ) {
+          // Don't do anythinig if the values haven't changed
+          return;
+        }
+
+        autoscrollToTopThreshold.current =
+          mvcp.autoscrollToTopThreshold || -Number.MAX_SAFE_INTEGER;
+        minIndexForVisible.current = mvcp.minIndexForVisible || 0;
+
+        if (flRef.current) {
+          const viewTag = findNodeHandle(flRef.current);
+          cleanupPromise = MvcpScrollViewManager.enableMaintainVisibleContentPosition(
+            viewTag,
+            autoscrollToTopThreshold.current,
+            minIndexForVisible.current
+          );
+        }
+      };
+
+      enableMaintainVisibleContentPosition();
 
       return () => {
+        if (
+          autoscrollToTopThreshold.current === mvcp.autoscrollToTopThreshold &&
+          minIndexForVisible.current === mvcp.minIndexForVisible
+        ) {
+          // Don't do anythinig if the values haven't changed
+          return;
+        }
+
         cleanupPromise?.then((handle) => {
           MvcpScrollViewManager.disableMaintainVisibleContentPosition(handle);
         });
       };
-    }, [flRef, extraData, maintainVisibleContentPosition]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [extraData, mvcp]);
 
     return (
       <FlatList
@@ -62,7 +83,11 @@ const FlatListComponent = React.forwardRef(
         ref={(ref) => {
           // @ts-ignore
           flRef.current = ref;
-          typeof forwardedRef === 'function' && forwardedRef(ref);
+          if (typeof forwardedRef === 'function') {
+            forwardedRef(ref);
+          } else if (forwardedRef?.current) {
+            forwardedRef.current = ref;
+          }
         }}
       />
     );
@@ -71,43 +96,68 @@ const FlatListComponent = React.forwardRef(
 
 const ScrollViewComponent = React.forwardRef(
   (props: ScrollViewComponentPropType, forwardedRef) => {
-    const svRef = useRef<ScrollView>(null);
-    const { maintainVisibleContentPosition } = props;
+    const flRef = useRef<FlatList>(null);
+
+    const { maintainVisibleContentPosition: mvcp } = props;
+    const autoscrollToTopThreshold = useRef<number>();
+    const minIndexForVisible = useRef<number>();
 
     useEffect(() => {
       let cleanupPromise: Promise<number> | undefined;
-      if (
-        svRef.current &&
-        Platform.OS === 'android' &&
-        maintainVisibleContentPosition
-      ) {
-        const mvcp = {
-          autoscrollToTopThreshold: 0,
-          ...maintainVisibleContentPosition,
-        };
+      const enableMaintainVisibleContentPosition = (): void => {
+        if (!mvcp || Platform.OS !== 'android') return;
 
-        const viewTag = findNodeHandle(svRef.current);
-        cleanupPromise = MvcpScrollViewManager.enableMaintainVisibleContentPosition(
-          viewTag,
-          mvcp.autoscrollToTopThreshold,
-          mvcp.minIndexForVisible
-        );
-      }
+        if (
+          autoscrollToTopThreshold.current === mvcp.autoscrollToTopThreshold &&
+          minIndexForVisible.current === mvcp.minIndexForVisible
+        ) {
+          // Don't do anythinig if the values haven't changed
+          return;
+        }
+
+        autoscrollToTopThreshold.current =
+          mvcp.autoscrollToTopThreshold || -Number.MAX_SAFE_INTEGER;
+        minIndexForVisible.current = mvcp.minIndexForVisible || 0;
+
+        if (flRef.current) {
+          const viewTag = findNodeHandle(flRef.current);
+          cleanupPromise = MvcpScrollViewManager.enableMaintainVisibleContentPosition(
+            viewTag,
+            autoscrollToTopThreshold.current,
+            minIndexForVisible.current
+          );
+        }
+      };
+
+      enableMaintainVisibleContentPosition();
 
       return () => {
+        if (
+          autoscrollToTopThreshold.current === mvcp.autoscrollToTopThreshold &&
+          minIndexForVisible.current === mvcp.minIndexForVisible
+        ) {
+          // Don't do anythinig if the values haven't changed
+          return;
+        }
+
         cleanupPromise?.then((handle) => {
           MvcpScrollViewManager.disableMaintainVisibleContentPosition(handle);
         });
       };
-    }, [svRef, maintainVisibleContentPosition]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mvcp]);
 
     return (
       <ScrollView
         {...props}
         ref={(ref) => {
           // @ts-ignore
-          svRef.current = ref;
-          typeof forwardedRef === 'function' && forwardedRef(ref);
+          flRef.current = ref;
+          if (typeof forwardedRef === 'function') {
+            forwardedRef(ref);
+          } else if (forwardedRef?.current) {
+            forwardedRef.current = ref;
+          }
         }}
       />
     );
