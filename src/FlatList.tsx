@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { MutableRefObject, useRef } from 'react';
 import {
   FlatList,
   FlatListProps,
@@ -18,7 +18,13 @@ export type FlatListComponentPropType<T = any> = FlatListProps<T> & {
 export const MvcpScrollViewManager = NativeModules.MvcpScrollViewManager;
 
 export default React.forwardRef(
-  <T extends any>(props: FlatListComponentPropType, forwardedRef) => {
+  <T extends any>(
+    props: FlatListComponentPropType<T>,
+    forwardedRef:
+      | ((instance: FlatList<T> | null) => void)
+      | MutableRefObject<FlatList<T> | null>
+      | null
+  ) => {
     const flRef = useRef<FlatList<T>>();
     const { maintainVisibleContentPosition: mvcp } = props;
 
