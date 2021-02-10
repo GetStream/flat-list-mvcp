@@ -53,7 +53,7 @@ export default React.forwardRef(
         mvcp.autoscrollToTopThreshold || -Number.MAX_SAFE_INTEGER;
       minIndexForVisible.current = mvcp.minIndexForVisible || 0;
 
-      const viewTag = findNodeHandle(flRef.current);
+      const viewTag = flRef.current.getScrollableNode();
       cleanupPromiseRef.current = MvcpScrollViewManager.enableMaintainVisibleContentPosition(
         viewTag,
         autoscrollToTopThreshold.current,
