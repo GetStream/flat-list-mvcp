@@ -7,25 +7,17 @@ import {
   Platform,
 } from 'react-native';
 
-export type maintainVisibleContentPositionPropType = {
-  autoscrollToTopThreshold?: number;
-  minIndexForVisible: number;
-};
-
-export type FlatListComponentPropType<T = any> = FlatListProps<T> & {
-  maintainVisibleContentPosition: maintainVisibleContentPositionPropType;
-};
 export const MvcpScrollViewManager = NativeModules.MvcpScrollViewManager;
 
-export default React.forwardRef(
+export default (React.forwardRef(
   <T extends any>(
-    props: FlatListComponentPropType<T>,
+    props: FlatListProps<T>,
     forwardedRef:
       | ((instance: FlatList<T> | null) => void)
       | MutableRefObject<FlatList<T> | null>
       | null
   ) => {
-    const flRef = useRef<FlatList<T>>();
+    const flRef = useRef<FlatList<T> | null>(null);
     const { maintainVisibleContentPosition: mvcp } = props;
 
     const autoscrollToTopThreshold = useRef<number>();
@@ -33,7 +25,7 @@ export default React.forwardRef(
     const cleanupPromiseRef = useRef<Promise<any>>();
 
     const resetMvcpIfNeeded = (): void => {
-      if (!mvcp || Platform.OS !== 'android' || !flRef?.current) {
+      if (!mvcp || Platform.OS !== 'android' || !flRef.current) {
         return;
       }
       if (
@@ -65,7 +57,6 @@ export default React.forwardRef(
       <FlatList<T>
         {...props}
         ref={(ref) => {
-          // @ts-ignore
           flRef.current = ref;
 
           resetMvcpIfNeeded();
@@ -79,4 +70,4 @@ export default React.forwardRef(
       />
     );
   }
-);
+) as unknown) as typeof FlatList;

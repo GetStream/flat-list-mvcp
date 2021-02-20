@@ -30,7 +30,5 @@
     "allowJs": true,
     "checkJs": false
   },
-  "exclude": [
-    "./Example/",
-  ]
+  "exclude": ["./Example/"]
 }
