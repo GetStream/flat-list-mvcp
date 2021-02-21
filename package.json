@@ -10,7 +10,6 @@
   "files": [
     "src",
     "lib",
-    "Example",
     "android",
     "ios",
     "cpp",
