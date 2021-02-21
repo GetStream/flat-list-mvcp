@@ -1117,10 +1117,10 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
-"@stream-io/flat-list-mvcp@0.0.6-dev.4":
-  version "0.0.6-dev.4"
-  resolved "https://registry.yarnpkg.com/@stream-io/flat-list-mvcp/-/flat-list-mvcp-0.0.6-dev.4.tgz#7faafa2a89ce976782699e555b6eb0a6157655e9"
-  integrity sha512-fWMzNibgkx5pLc5a6py+hZfRoVqQK8d0XbhbqAGlFT4OgwURsaVtUYgpvRK075w6kpFHxTyHXU3eqqIWAqzOJg==
+"@stream-io/flat-list-mvcp@0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@stream-io/flat-list-mvcp/-/flat-list-mvcp-0.0.6.tgz#56741c0d55a0a6a21379c0aba1af2808a2b69dfb"
+  integrity sha512-sc/MFz1nrXOPs6P3j//rZyYaXDd+NACJcLh41N4YUNLE6y6HpwQYtDZyO7dew6FBNCXsKs8Mjpy6VwGpgHmEOg==
 
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.7":
   version "7.1.12"
