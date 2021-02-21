@@ -1,6 +1,6 @@
 {
   "name": "@stream-io/flat-list-mvcp",
-  "version": "0.0.6-dev.4",
+  "version": "0.0.6",
   "description": "`maintainVisibleContentPosition` support for Android react-native",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
