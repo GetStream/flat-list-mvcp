@@ -1,11 +1,11 @@
 {
   "name": "@stream-io/flat-list-mvcp",
-  "version": "0.0.4",
+  "version": "0.0.6-dev.4",
   "description": "`maintainVisibleContentPosition` support for Android react-native",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/src/index.d.ts",
-  "react-native": "src/index",
+  "react-native": "lib/module/index",
   "source": "src/index",
   "files": [
     "src",
@@ -14,12 +14,13 @@
     "ios",
     "cpp",
     "mvcp-scroll-view-manager.podspec",
-    "!lib/typescript/example",
+    "!lib/typescript/Example",
     "!**/__tests__",
     "!**/__fixtures__",
     "!**/__mocks__"
   ],
   "scripts": {
+    "build": "rm -rf lib && bob build && rm lib/module/index.js && rm lib/commonjs/index.js",
     "test": "jest",
     "typescript": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
@@ -27,7 +28,8 @@
     "release": "release-it",
     "example": "yarn --cwd example",
     "pods": "cd example && pod-install --quiet",
-    "bootstrap": "yarn example && yarn && yarn pods"
+    "bootstrap": "yarn example && yarn && yarn pods",
+    "prepare": "yarn build"
   },
   "keywords": [
     "react-native",
@@ -43,12 +45,11 @@
   "homepage": "https://github.com/GetStream/flat-list-mvcp#readme",
   "devDependencies": {
     "@commitlint/config-conventional": "^8.3.4",
-    "@react-native-community/bob": "^0.16.2",
     "@react-native-community/eslint-config": "^2.0.0",
     "@release-it/conventional-changelog": "^1.1.4",
     "@types/jest": "^26.0.0",
     "@types/react": "^16.9.19",
-    "@types/react-native": "0.62.13",
+    "@types/react-native": "0.63.50",
     "commitlint": "^8.3.5",
     "eslint": "^7.2.0",
     "eslint-config-prettier": "^6.11.0",
@@ -59,8 +60,9 @@
     "prettier": "^2.0.5",
     "react": "16.11.0",
     "react-native": "0.62.2",
+    "react-native-builder-bob": "^0.17.1",
     "release-it": "^13.5.8",
-    "typescript": "^3.8.3"
+    "typescript": "^4.1.4"
   },
   "peerDependencies": {
     "react": "*",
@@ -129,7 +131,7 @@
     "trailingComma": "es5",
     "useTabs": false
   },
-  "@react-native-community/bob": {
+  "react-native-builder-bob": {
     "source": "src",
     "output": "lib",
     "targets": [

@@ -6,7 +6,11 @@ import {
   findNodeHandle,
 } from 'react-native';
 
-import type { maintainVisibleContentPositionPropType } from './FlatList';
+export type maintainVisibleContentPositionPropType = {
+  autoscrollToTopThreshold?: number | null;
+  minIndexForVisible: number;
+};
+
 export const MvcpScrollViewManager = NativeModules.MvcpScrollViewManager;
 
 export const useMvcpTuner = (
