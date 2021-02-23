@@ -10,9 +10,10 @@ In react-native, [ScrollView](https://reactnative.dev/docs/scrollview) (and [Fla
 
 We built this wrapper for our in-house [react-native chat sdk](https://github.com/GetStream/stream-chat-react-native), but we are making it public, in case it helps other devs from react-native community.
 
-**Note**: Doesn't support [Expo managed workflow](https://docs.expo.io/introduction/managed-vs-bare/#managed-workflow). There is a feature request open for expo - https://expo.canny.io/feature-requests/p/android-maintainvisiblecontentposition-on-flatlist (please upvote)
+Before you proceed, please don't forget to also check other relevant packages, built at Stream:
 
-**Credits**: Thanks to [stackia](https://github.com/stackia) for https://github.com/facebook/react-native/pull/29466#issuecomment-664367382
+- [react-native-bidirectional-infinite-scroll](https://github.com/GetStream/react-native-bidirectional-infinite-scroll)
+- [stream-chat-react-native](https://github.com/GetStream/stream-chat-react-native)
 
 ## Example
 
@@ -55,6 +56,15 @@ import { FlatList, ScrollView } from '@stream-io/flat-list-mvcp';
 />
 
 ```
+
+## Expo support
+
+This package doesn't support [Expo managed workflow](https://docs.expo.io/introduction/managed-vs-bare/#managed-workflow). There is a feature request open for expo - https://expo.canny.io/feature-requests/p/android-maintainvisiblecontentposition-on-flatlist (please upvote)
+
+
+## Credits
+
+Thanks to [stackia](https://github.com/stackia) for https://github.com/facebook/react-native/pull/29466#issuecomment-664367382
 
 ## Contributing
 
