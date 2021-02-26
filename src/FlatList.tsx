@@ -20,17 +20,23 @@ export default (React.forwardRef(
     const flRef = useRef<FlatList<T> | null>(null);
     const { maintainVisibleContentPosition: mvcp } = props;
 
-    const autoscrollToTopThreshold = useRef<number>();
+    const autoscrollToTopThreshold = useRef<number | null>();
     const minIndexForVisible = useRef<number>();
     const cleanupPromiseRef = useRef<Promise<any>>();
+
+    const getAutoscrollToTopThresholdFromProp = () =>
+      mvcp?.autoscrollToTopThreshold || -Number.MAX_SAFE_INTEGER;
+
+    const getMinIndexForVisibleFromProp = () => mvcp?.minIndexForVisible || 1;
 
     const resetMvcpIfNeeded = (): void => {
       if (!mvcp || Platform.OS !== 'android' || !flRef.current) {
         return;
       }
       if (
-        autoscrollToTopThreshold.current === mvcp.autoscrollToTopThreshold &&
-        minIndexForVisible.current === mvcp.minIndexForVisible
+        autoscrollToTopThreshold.current ===
+          getAutoscrollToTopThresholdFromProp() &&
+        minIndexForVisible.current === getMinIndexForVisibleFromProp()
       ) {
         // Don't do anythinig if the values haven't changed
         return;
@@ -41,9 +47,8 @@ export default (React.forwardRef(
           MvcpScrollViewManager.disableMaintainVisibleContentPosition(handle);
         });
 
-      autoscrollToTopThreshold.current =
-        mvcp.autoscrollToTopThreshold || -Number.MAX_SAFE_INTEGER;
-      minIndexForVisible.current = mvcp.minIndexForVisible || 0;
+      autoscrollToTopThreshold.current = getAutoscrollToTopThresholdFromProp();
+      minIndexForVisible.current = getMinIndexForVisibleFromProp();
 
       const viewTag = findNodeHandle(flRef.current);
       cleanupPromiseRef.current = MvcpScrollViewManager.enableMaintainVisibleContentPosition(

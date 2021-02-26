@@ -16,18 +16,28 @@ const AddMoreButton = ({onPress}) => (
 
 const ListItem = ({item}) => (
   <View style={styles.listItem}>
-    <Text>List item: {item}</Text>
+    <Text>List item: {item.value}</Text>
   </View>
 );
 
+// Generate unique key list item.
+export const generateUniqueKey = () =>
+  `_${Math.random().toString(36).substr(2, 9)}`;
+
 export default () => {
-  const [numbers, setNumbers] = useState(Array.from(Array(10).keys()));
+  const [numbers, setNumbers] = useState(
+    Array.from(Array(10).keys()).map((n) => ({
+      id: generateUniqueKey(),
+      value: n,
+    })),
+  );
 
   const addToEnd = () => {
     setNumbers((prev) => {
-      const additionalNumbers = Array.from(Array(5).keys()).map(
-        (n) => n + prev[prev.length - 1] + 1,
-      );
+      const additionalNumbers = Array.from(Array(5).keys()).map((n) => ({
+        id: generateUniqueKey(),
+        value: n + prev[prev.length - 1].value + 1,
+      }));
 
       return prev.concat(additionalNumbers);
     });
@@ -36,7 +46,10 @@ export default () => {
   const addToStart = () => {
     setNumbers((prev) => {
       const additionalNumbers = Array.from(Array(5).keys())
-        .map((n) => prev[0] - n - 1)
+        .map((n) => ({
+          id: generateUniqueKey(),
+          value: prev[0].value - n - 1,
+        }))
         .reverse();
 
       return additionalNumbers.concat(prev);
@@ -49,10 +62,9 @@ export default () => {
       <View style={styles.listContainer}>
         <FlatList
           data={numbers}
-          keyExtractor={(item) => item.toString()}
+          keyExtractor={(item) => item.id}
           maintainVisibleContentPosition={{
-            autoscrollToTopThreshold: 20,
-            minIndexForVisible: 0,
+            minIndexForVisible: 1,
           }}
           renderItem={ListItem}
         />
