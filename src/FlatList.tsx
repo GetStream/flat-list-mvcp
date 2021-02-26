@@ -1,11 +1,5 @@
 import React, { MutableRefObject, useRef } from 'react';
-import {
-  FlatList,
-  FlatListProps,
-  findNodeHandle,
-  NativeModules,
-  Platform,
-} from 'react-native';
+import { FlatList, FlatListProps, NativeModules, Platform } from 'react-native';
 
 export const MvcpScrollViewManager = NativeModules.MvcpScrollViewManager;
 
@@ -24,19 +18,13 @@ export default (React.forwardRef(
     const minIndexForVisible = useRef<number>();
     const cleanupPromiseRef = useRef<Promise<any>>();
 
-    const getAutoscrollToTopThresholdFromProp = () =>
-      mvcp?.autoscrollToTopThreshold || -Number.MAX_SAFE_INTEGER;
-
-    const getMinIndexForVisibleFromProp = () => mvcp?.minIndexForVisible || 1;
-
     const resetMvcpIfNeeded = (): void => {
       if (!mvcp || Platform.OS !== 'android' || !flRef.current) {
         return;
       }
       if (
-        autoscrollToTopThreshold.current ===
-          getAutoscrollToTopThresholdFromProp() &&
-        minIndexForVisible.current === getMinIndexForVisibleFromProp()
+        autoscrollToTopThreshold.current === mvcp?.autoscrollToTopThreshold &&
+        minIndexForVisible.current === mvcp?.minIndexForVisible
       ) {
         // Don't do anythinig if the values haven't changed
         return;
@@ -47,14 +35,14 @@ export default (React.forwardRef(
           MvcpScrollViewManager.disableMaintainVisibleContentPosition(handle);
         });
 
-      autoscrollToTopThreshold.current = getAutoscrollToTopThresholdFromProp();
-      minIndexForVisible.current = getMinIndexForVisibleFromProp();
+      autoscrollToTopThreshold.current = mvcp?.autoscrollToTopThreshold;
+      minIndexForVisible.current = mvcp?.minIndexForVisible;
 
-      const viewTag = findNodeHandle(flRef.current);
+      const viewTag = flRef.current.getScrollableNode();
       cleanupPromiseRef.current = MvcpScrollViewManager.enableMaintainVisibleContentPosition(
         viewTag,
-        autoscrollToTopThreshold.current,
-        minIndexForVisible.current
+        autoscrollToTopThreshold.current || -Number.MAX_SAFE_INTEGER,
+        minIndexForVisible.current || 1
       );
     };
 

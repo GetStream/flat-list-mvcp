@@ -109,10 +109,14 @@ public class MvcpScrollViewManagerModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void disableMaintainVisibleContentPosition(int key, Promise promise) {
-    if (key >= 0) {
-      final UIManagerModule uiManagerModule = this.reactContext.getNativeModule(UIManagerModule.class);
-      uiManagerModule.removeUIManagerListener(uiManagerModuleListeners.remove(key));
+    try {
+      if (key >= 0) {
+        final UIManagerModule uiManagerModule = this.reactContext.getNativeModule(UIManagerModule.class);
+        uiManagerModule.removeUIManagerListener(uiManagerModuleListeners.remove(key));
+      }
+      promise.resolve(null);
+    } catch (IllegalViewOperationException e) {
+      promise.resolve(-1);
     }
-    promise.resolve(null);
   }
 }
