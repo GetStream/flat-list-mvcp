@@ -1,7 +1,7 @@
 # `maintainVisibleContentPosition` prop support for Android react-native.
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/GetStream/flat-list-mvcp/blob/main/LICENSE)
-[![Npm Package](https://img.shields.io/badge/npm--package-v0.0.6-blue)](https://www.npmjs.com/package/@stream-io/flat-list-mvcp)
+[![Npm Package](https://img.shields.io/badge/npm--package-v0.0.8-blue)](https://www.npmjs.com/package/@stream-io/flat-list-mvcp)
 [![Compatibility](https://img.shields.io/badge/react--native%20--%20android%20%7C%20iOS-compatible-brightgreen)](https://reactnative.dev/)
 
 **[** Built with ♥ at [Stream](https://getstream.io/) **]**
