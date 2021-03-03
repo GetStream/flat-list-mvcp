@@ -1,20 +1,32 @@
 import React, { MutableRefObject, useRef } from 'react';
 import { FlatList, FlatListProps, NativeModules, Platform } from 'react-native';
 import debounce from 'lodash/debounce';
+
 export const MvcpScrollViewManager = NativeModules.MvcpScrollViewManager;
 
 const debouncedEnable = debounce(
   (
-    cleanupPromiseRef: MutableRefObject<Promise<any> | null>,
+    enableMvcpPromise: MutableRefObject<Promise<any> | null>,
+    disableMvcpPromise: MutableRefObject<Promise<any> | null>,
     viewTag: any,
     autoscrollToTopThreshold: number,
     minIndexForVisible: number
   ) => {
-    cleanupPromiseRef.current = MvcpScrollViewManager.enableMaintainVisibleContentPosition(
-      viewTag,
-      autoscrollToTopThreshold || -Number.MAX_SAFE_INTEGER,
-      minIndexForVisible || 1
-    );
+    if (disableMvcpPromise.current) {
+      disableMvcpPromise.current.then(() => {
+        enableMvcpPromise.current = MvcpScrollViewManager.enableMaintainVisibleContentPosition(
+          viewTag,
+          autoscrollToTopThreshold,
+          minIndexForVisible
+        );
+      });
+    } else {
+      enableMvcpPromise.current = MvcpScrollViewManager.enableMaintainVisibleContentPosition(
+        viewTag,
+        autoscrollToTopThreshold,
+        minIndexForVisible
+      );
+    }
   },
   100,
   {
@@ -23,11 +35,15 @@ const debouncedEnable = debounce(
 );
 
 const debouncedDisable = debounce(
-  (cleanupPromiseRef: MutableRefObject<Promise<any> | null>) => {
-    cleanupPromiseRef.current &&
-      cleanupPromiseRef.current?.then((handle) => {
-        MvcpScrollViewManager.disableMaintainVisibleContentPosition(handle);
-      });
+  (
+    enableMvcpPromise: MutableRefObject<Promise<any> | null>,
+    disableMvcpPromise: MutableRefObject<Promise<any> | null>
+  ) => {
+    enableMvcpPromise.current?.then((handle) => {
+      disableMvcpPromise.current = MvcpScrollViewManager.disableMaintainVisibleContentPosition(
+        handle
+      );
+    });
   },
   50,
   {
@@ -48,21 +64,25 @@ export default (React.forwardRef(
 
     const autoscrollToTopThreshold = useRef<number | null>();
     const minIndexForVisible = useRef<number>();
-    const cleanupPromiseRef = useRef<Promise<any> | null>(null);
+    const enableMvcpPromise = useRef<Promise<any> | null>(null);
+    const disableMvcpPromise = useRef<Promise<any> | null>(null);
 
     const resetMvcpIfNeeded = (): void => {
       if (!mvcp || Platform.OS !== 'android' || !flRef.current) {
         return;
       }
 
-      debouncedDisable(cleanupPromiseRef);
+      enableMvcpPromise &&
+        enableMvcpPromise.current &&
+        debouncedDisable(enableMvcpPromise, disableMvcpPromise);
 
       autoscrollToTopThreshold.current = mvcp?.autoscrollToTopThreshold;
       minIndexForVisible.current = mvcp?.minIndexForVisible;
 
       const viewTag = flRef.current.getScrollableNode();
       debouncedEnable(
-        cleanupPromiseRef,
+        enableMvcpPromise,
+        disableMvcpPromise,
         viewTag,
         autoscrollToTopThreshold.current || -Number.MAX_SAFE_INTEGER,
         minIndexForVisible.current || 1
