@@ -98,7 +98,7 @@ export default (React.forwardRef(
           resetMvcpIfNeeded();
           if (typeof forwardedRef === 'function') {
             forwardedRef(ref);
-          } else if (forwardedRef?.current) {
+          } else if (forwardedRef) {
             forwardedRef.current = ref;
           }
         }}
