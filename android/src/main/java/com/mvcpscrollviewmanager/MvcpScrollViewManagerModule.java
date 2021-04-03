@@ -18,8 +18,16 @@ import com.facebook.react.views.view.ReactViewGroup;
 
 import java.util.HashMap;
 
-public class MvcpScrollViewManagerModule extends ReactContextBaseJavaModule {
+/**
+ * Holds the required values for layoutUpdateListener.
+ */
+class ScrollViewUIHolders {
+  static int prevFirstVisibleTop = 0;
+  static View firstVisibleView = null;
+  static int currentScrollY = 0;
+}
 
+public class MvcpScrollViewManagerModule extends ReactContextBaseJavaModule {
   private final ReactApplicationContext reactContext;
   private HashMap<Integer, UIManagerModuleListener> uiManagerModuleListeners;
 
@@ -48,60 +56,51 @@ public class MvcpScrollViewManagerModule extends ReactContextBaseJavaModule {
         try {
           final ReactScrollView scrollView = (ReactScrollView)uiManagerModule.resolveView(viewTag);
           final UIManagerModuleListener uiManagerModuleListener = new UIManagerModuleListener() {
-            private int prevFirstVisibleTop = 0;
-            private View firstVisibleView = null;
-            private int currentScrollY = 0;
             @Override
             public void willDispatchViewUpdates(final UIManagerModule uiManagerModule) {
-              uiManagerModule.prependUIBlock(new UIBlock() {
-                @Override
-                public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-                  ReactViewGroup mContentView = (ReactViewGroup)scrollView.getChildAt(0);
-                  if (mContentView == null) return;
+              ReactViewGroup mContentView = (ReactViewGroup)scrollView.getChildAt(0);
+              if (mContentView == null) return;
 
-                  currentScrollY = scrollView.getScrollY();
+              ScrollViewUIHolders.currentScrollY = scrollView.getScrollY();
 
-                  for (int ii = minIndexForVisible; ii < mContentView.getChildCount(); ++ii) {
-                    View subview = mContentView.getChildAt(ii);
-                    if (subview.getTop() >= currentScrollY) {
-                      prevFirstVisibleTop = subview.getTop();
-                      firstVisibleView = subview;
-                      break;
-                    }
-                  }
+              for (int ii = minIndexForVisible; ii < mContentView.getChildCount(); ++ii) {
+                View subview = mContentView.getChildAt(ii);
+                if (subview.getTop() >= ScrollViewUIHolders.currentScrollY) {
+                  ScrollViewUIHolders.prevFirstVisibleTop = subview.getTop();
+                  ScrollViewUIHolders.firstVisibleView = subview;
+                  break;
                 }
-              });
-
-              UIImplementation.LayoutUpdateListener layoutUpdateListener = new UIImplementation.LayoutUpdateListener() {
-                @Override
-                public void onLayoutUpdated(ReactShadowNode root) {
-                  if (firstVisibleView == null) return;
-
-                  int deltaY = firstVisibleView.getTop() - prevFirstVisibleTop;
-
-
-                  if (Math.abs(deltaY) > 1) {
-                    boolean isWithinThreshold = currentScrollY <= autoscrollToTopThreshold;
-                    scrollView.setScrollY(currentScrollY + deltaY);
-
-                    // If the offset WAS within the threshold of the start, animate to the start.
-                    if (isWithinThreshold) {
-                      scrollView.smoothScrollTo(scrollView.getScrollX(), 0);
-                    }
-                  }
-                  uiManagerModule.getUIImplementation().removeLayoutUpdateListener();
-                }
-              };
-
-              uiManagerModule.getUIImplementation().setLayoutUpdateListener(layoutUpdateListener);
+              }
             }
           };
+
+          UIImplementation.LayoutUpdateListener layoutUpdateListener = new UIImplementation.LayoutUpdateListener() {
+            @Override
+            public void onLayoutUpdated(ReactShadowNode root) {
+              if (ScrollViewUIHolders.firstVisibleView == null) return;
+
+              int deltaY = ScrollViewUIHolders.firstVisibleView.getTop() - ScrollViewUIHolders.prevFirstVisibleTop;
+
+
+              if (Math.abs(deltaY) > 1) {
+                boolean isWithinThreshold = ScrollViewUIHolders.currentScrollY <= autoscrollToTopThreshold;
+                scrollView.setScrollY(ScrollViewUIHolders.currentScrollY + deltaY);
+
+                // If the offset WAS within the threshold of the start, animate to the start.
+                if (isWithinThreshold) {
+                  scrollView.smoothScrollTo(scrollView.getScrollX(), 0);
+                }
+              }
+            }
+          };
+
+          uiManagerModule.getUIImplementation().setLayoutUpdateListener(layoutUpdateListener);
           uiManagerModule.addUIManagerListener(uiManagerModuleListener);
           int key = uiManagerModuleListeners.size() + 1;
           uiManagerModuleListeners.put(key, uiManagerModuleListener);
           promise.resolve(key);
         } catch(IllegalViewOperationException e) {
-          promise.resolve(-1);
+          promise.reject(e);
         }
       }
     });
@@ -113,9 +112,10 @@ public class MvcpScrollViewManagerModule extends ReactContextBaseJavaModule {
       if (key >= 0) {
         final UIManagerModule uiManagerModule = this.reactContext.getNativeModule(UIManagerModule.class);
         uiManagerModule.removeUIManagerListener(uiManagerModuleListeners.remove(key));
+        uiManagerModule.getUIImplementation().removeLayoutUpdateListener();
       }
       promise.resolve(null);
-    } catch (IllegalViewOperationException e) {
+    } catch (Exception e) {
       promise.resolve(-1);
     }
   }
