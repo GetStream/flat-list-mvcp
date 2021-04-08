@@ -23,11 +23,9 @@ export default (React.forwardRef(
     const propAutoscrollToTopThreshold =
       mvcp?.autoscrollToTopThreshold || -Number.MAX_SAFE_INTEGER;
     const propMinIndexForVisible = mvcp?.minIndexForVisible || 1;
-
     const hasMvcpChanged =
       autoscrollToTopThreshold.current !== propAutoscrollToTopThreshold ||
       minIndexForVisible.current !== propMinIndexForVisible;
-
     const enableMvcp = () => {
       if (!flRef.current) return;
 
@@ -45,9 +43,6 @@ export default (React.forwardRef(
     };
 
     const enableMvcpWithRetries = () => {
-      autoscrollToTopThreshold.current = propAutoscrollToTopThreshold;
-      minIndexForVisible.current = propMinIndexForVisible;
-
       return enableMvcp()?.catch(() => {
         /**
          * enableMaintainVisibleContentPosition from native module may throw IllegalViewOperationException,
@@ -86,6 +81,8 @@ export default (React.forwardRef(
       if (isMvcpEnabled.current && !hasMvcpChanged) {
         return;
       }
+      autoscrollToTopThreshold.current = propAutoscrollToTopThreshold;
+      minIndexForVisible.current = propMinIndexForVisible;
 
       isMvcpEnabled.current = true;
       disableMvcp().then(enableMvcpWithRetries);

@@ -58,19 +58,24 @@ public class MvcpScrollViewManagerModule extends ReactContextBaseJavaModule {
           final UIManagerModuleListener uiManagerModuleListener = new UIManagerModuleListener() {
             @Override
             public void willDispatchViewUpdates(final UIManagerModule uiManagerModule) {
-              ReactViewGroup mContentView = (ReactViewGroup)scrollView.getChildAt(0);
-              if (mContentView == null) return;
+              uiManagerModule.prependUIBlock(new UIBlock() {
+                @Override
+                public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+                  ReactViewGroup mContentView = (ReactViewGroup)scrollView.getChildAt(0);
+                  if (mContentView == null) return;
 
-              ScrollViewUIHolders.currentScrollY = scrollView.getScrollY();
+                  ScrollViewUIHolders.currentScrollY = scrollView.getScrollY();
 
-              for (int ii = minIndexForVisible; ii < mContentView.getChildCount(); ++ii) {
-                View subview = mContentView.getChildAt(ii);
-                if (subview.getTop() >= ScrollViewUIHolders.currentScrollY) {
-                  ScrollViewUIHolders.prevFirstVisibleTop = subview.getTop();
-                  ScrollViewUIHolders.firstVisibleView = subview;
-                  break;
+                  for (int ii = minIndexForVisible; ii < mContentView.getChildCount(); ++ii) {
+                    View subview = mContentView.getChildAt(ii);
+                    if (subview.getTop() >= ScrollViewUIHolders.currentScrollY) {
+                      ScrollViewUIHolders.prevFirstVisibleTop = subview.getTop();
+                      ScrollViewUIHolders.firstVisibleView = subview;
+                      break;
+                    }
+                  }
                 }
-              }
+              });
             }
           };
 
