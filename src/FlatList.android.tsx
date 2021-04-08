@@ -49,7 +49,7 @@ export default (React.forwardRef(
          * in case view is not ready yet. In that case, lets do a retry!!
          */
         if (enableMvcpRetries.current < 10) {
-          setTimeout(enableMvcp, 10);
+          setTimeout(enableMvcpWithRetries, 10);
           enableMvcpRetries.current += 1;
         }
       });
