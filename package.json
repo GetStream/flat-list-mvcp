@@ -29,7 +29,7 @@
     "example": "yarn --cwd example",
     "pods": "cd example && pod-install --quiet",
     "bootstrap": "yarn example && yarn && yarn pods",
-    "prepare": "yarn build"
+    "prepare": "npm run build"
   },
   "keywords": [
     "react-native",
