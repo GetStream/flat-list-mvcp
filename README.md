@@ -15,6 +15,8 @@ Before you proceed, please don't forget to also check other relevant packages, b
 - [react-native-bidirectional-infinite-scroll](https://github.com/GetStream/react-native-bidirectional-infinite-scroll)
 - [stream-chat-react-native](https://github.com/GetStream/stream-chat-react-native)
 
+> ⚠️ Horizontal list is currently not supported on this package.
+
 ## Example
 
 ```sh
