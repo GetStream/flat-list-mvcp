@@ -20,7 +20,7 @@
     "!**/__mocks__"
   ],
   "scripts": {
-    "build": "rm -rf lib && bob build && rm lib/module/index.js && rm lib/commonjs/index.js",
+    "build": "rm -rf lib && bob build && rm lib/module/index.js",
     "test": "jest",
     "typescript": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
