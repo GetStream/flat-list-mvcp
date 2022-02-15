@@ -96,7 +96,15 @@ public class MvcpScrollViewManagerModule extends ReactContextBaseJavaModule {
           uiManagerModule.prependUIBlock(new UIBlock() {
             @Override
             public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-              ReactScrollView scrollView = (ReactScrollView) uiManagerModule.resolveView(viewTag);
+              ReactScrollView scrollView = null;
+              try {
+                scrollView = (ReactScrollView) uiManagerModule.resolveView(viewTag);
+              }catch(IllegalViewOperationException e){
+                //no opt. If viewTag does not exist anymore, skip layout update
+              }
+              if(scrollView == null){
+                return;
+              }
               ReactViewGroup mContentView = (ReactViewGroup) scrollView.getChildAt(0);
               ScrollViewUIHolders uiHolder = getScrollViewUiHolder(viewTag);
 
