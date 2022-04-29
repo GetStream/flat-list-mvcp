@@ -116,8 +116,16 @@ public class MvcpScrollViewManagerModule extends ReactContextBaseJavaModule {
     try {
       if (key >= 0) {
         final UIManagerModule uiManagerModule = this.reactContext.getNativeModule(UIManagerModule.class);
-        uiManagerModule.removeUIManagerListener(uiManagerModuleListeners.remove(key));
-        uiManagerModule.getUIImplementation().removeLayoutUpdateListener();
+        if (uiManagerModule != null) {
+          // adding to ui block ensures that the underlying callback executes after all view updates are dispatched
+          uiManagerModule.addUIBlock(new UIBlock() {
+            @Override
+            public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+              uiManagerModule.removeUIManagerListener(uiManagerModuleListeners.remove(key));
+              uiManagerModule.getUIImplementation().removeLayoutUpdateListener();
+            }
+          });
+        }
       }
       promise.resolve(null);
     } catch (Exception e) {
