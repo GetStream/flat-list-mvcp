@@ -9,8 +9,8 @@
     "esModuleInterop": true,
     "importsNotUsedAsValues": "error",
     "forceConsistentCasingInFileNames": true,
-    "jsx": "react-native",
-    "lib": ["esnext", "DOM"],
+    "jsx": "react",
+    "lib": ["esnext"],
     "module": "esnext",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
@@ -19,16 +19,10 @@
     "noStrictGenericChecks": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "strictNullChecks": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "esnext",
-    "allowSyntheticDefaultImports": true,
-    "noEmitOnError": false,
-    "noImplicitAny": true,
-    "allowJs": true,
-    "checkJs": false
+    "target": "esnext"
   },
   "exclude": ["./Example/"]
 }
