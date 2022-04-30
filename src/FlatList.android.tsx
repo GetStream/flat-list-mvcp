@@ -89,7 +89,7 @@ export default (React.forwardRef(
       const hasMvcpChanged =
         autoscrollToTopThreshold.current !== propAutoscrollToTopThreshold ||
         minIndexForVisible.current !== propMinIndexForVisible ||
-        (isMvcpPropPresentRef.current && !props.maintainVisibleContentPosition);
+        isMvcpPropPresentRef.current !== !!props.maintainVisibleContentPosition;
 
       if (hasMvcpChanged) {
         enableMvcpRetriesCount.current = 0;
