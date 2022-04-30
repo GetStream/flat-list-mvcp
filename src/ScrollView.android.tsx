@@ -43,10 +43,13 @@ export default React.forwardRef(
     const enableMvcpWithRetriesRef = useRef(() => {
       // debounce to wait till consecutive mvcp enabling
       // this ensures that always previous handles are disabled first
+      if (debounceTimeoutId.current) {
+        clearTimeout(debounceTimeoutId.current);
+      }
       debounceTimeoutId.current = setTimeout(async () => {
-        if (debounceTimeoutId.current) {
-          clearTimeout(debounceTimeoutId.current);
-        }
+        // disable any previous enabled handles
+        await disableMvcpRef.current();
+
         if (
           !flRef.current ||
           !isMvcpPropPresentRef.current ||
@@ -56,9 +59,6 @@ export default React.forwardRef(
           return;
         }
         const scrollableNode = flRef.current.getScrollableNode();
-
-        // disable any previous enabled handles
-        await disableMvcpRef.current();
 
         try {
           const _handle: number = await ScrollViewManager.enableMaintainVisibleContentPosition(
