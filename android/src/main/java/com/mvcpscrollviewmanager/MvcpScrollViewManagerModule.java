@@ -41,6 +41,15 @@ public class MvcpScrollViewManagerModule extends ReactContextBaseJavaModule {
     this.scrollViewUIHolders = new HashMap<>();
   }
 
+  private ScrollViewUIHolder getScrollViewUiHolderByViewTag(int viewTag) {
+    ScrollViewUIHolder scrollViewUIHolder = scrollViewUIHolders.get(viewTag);
+    if (scrollViewUIHolder == null) {
+      scrollViewUIHolder = new ScrollViewUIHolder();
+      scrollViewUIHolders.put(viewTag, scrollViewUIHolder);
+    }
+    return scrollViewUIHolder;
+  }
+
   private void removeScrollViewUiHolderByRNHandle(int rnHandle) {
     Iterator<ScrollViewUIHolder> iterator = scrollViewUIHolders.values().iterator();
     while (iterator.hasNext()) {
@@ -59,11 +68,7 @@ public class MvcpScrollViewManagerModule extends ReactContextBaseJavaModule {
       public void run() {
         final UIManagerModule uiManagerModule = getReactApplicationContext().getNativeModule(UIManagerModule.class);
         if (uiManagerModule == null) return;
-        ScrollViewUIHolder scrollViewUIHolder = scrollViewUIHolders.get(viewTag);
-        if (scrollViewUIHolder == null) {
-          scrollViewUIHolder = new ScrollViewUIHolder();
-          scrollViewUIHolders.put(viewTag, scrollViewUIHolder);
-        }
+        ScrollViewUIHolder scrollViewUIHolder = getScrollViewUiHolderByViewTag(viewTag);
         try {
           final UIManagerModuleListener uiManagerModuleListener = new UIManagerModuleListener() {
             @Override
@@ -77,8 +82,6 @@ public class MvcpScrollViewManagerModule extends ReactContextBaseJavaModule {
                   } catch (IllegalViewOperationException ignored) {
                   }
                   if (scrollView == null) return;
-                  ScrollViewUIHolder scrollViewUIHolder = scrollViewUIHolders.get(viewTag);
-                  if (scrollViewUIHolder == null) return;
                   ReactViewGroup mContentView = (ReactViewGroup) scrollView.getChildAt(0);
                   if (mContentView == null) return;
                   int scrollY = scrollView.getScrollY();
