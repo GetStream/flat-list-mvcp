@@ -11,97 +11,118 @@ export default (React.forwardRef(
       | MutableRefObject<FlatList<T> | null>
       | null
   ) => {
-    const { maintainVisibleContentPosition: mvcp } = props;
-
     const flRef = useRef<FlatList<T> | null>(null);
-    const isMvcpEnabled = useRef<any>(null);
-    const autoscrollToTopThreshold = useRef<number | null>();
-    const minIndexForVisible = useRef<number>();
-    const handle = useRef<any>(null);
-    const enableMvcpRetries = useRef<number>(0);
+    const isMvcpEnabledNative = useRef<boolean>(false);
+    const handle = useRef<number | null>(null);
+    const enableMvcpRetriesCount = useRef<number>(0);
+    const isMvcpPropPresentRef = useRef(!!props.maintainVisibleContentPosition);
 
-    const propAutoscrollToTopThreshold =
-      mvcp?.autoscrollToTopThreshold || -Number.MAX_SAFE_INTEGER;
-    const propMinIndexForVisible = mvcp?.minIndexForVisible || 1;
-    const hasMvcpChanged =
-      autoscrollToTopThreshold.current !== propAutoscrollToTopThreshold ||
-      minIndexForVisible.current !== propMinIndexForVisible;
-    const enableMvcp = () => {
-      if (!flRef.current) return;
-
-      const scrollableNode = flRef.current.getScrollableNode();
-      const enableMvcpPromise = ScrollViewManager.enableMaintainVisibleContentPosition(
-        scrollableNode,
-        autoscrollToTopThreshold.current,
-        minIndexForVisible.current
-      );
-
-      return enableMvcpPromise.then((_handle: number) => {
-        handle.current = _handle;
-        enableMvcpRetries.current = 0;
-      });
-    };
-
-    const enableMvcpWithRetries = () => {
-      return enableMvcp()?.catch(() => {
-        /**
-         * enableMaintainVisibleContentPosition from native module may throw IllegalViewOperationException,
-         * in case view is not ready yet. In that case, lets do a retry!!
-         */
-        if (enableMvcpRetries.current < 10) {
-          setTimeout(enableMvcpWithRetries, 10);
-          enableMvcpRetries.current += 1;
-        }
-      });
-    };
-
-    const disableMvcp: () => Promise<void> = () => {
-      if (!ScrollViewManager || !handle?.current) {
-        return Promise.resolve();
+    const autoscrollToTopThreshold = useRef<number | null>(
+      props.maintainVisibleContentPosition?.autoscrollToTopThreshold ||
+        -Number.MAX_SAFE_INTEGER
+    );
+    const minIndexForVisible = useRef<number>(
+      props.maintainVisibleContentPosition?.minIndexForVisible || 1
+    );
+    const retryTimeoutId = useRef<NodeJS.Timeout>();
+    const debounceTimeoutId = useRef<NodeJS.Timeout>();
+    const disableMvcpRef = useRef(async () => {
+      isMvcpEnabledNative.current = false;
+      if (!handle?.current) {
+        return;
       }
-
-      return ScrollViewManager.disableMaintainVisibleContentPosition(
+      await ScrollViewManager.disableMaintainVisibleContentPosition(
         handle.current
       );
-    };
-
-    // We can only call enableMaintainVisibleContentPosition once the ref to underlying scrollview is ready.
-    const resetMvcpIfNeeded = (): void => {
-      if (!mvcp || Platform.OS !== 'android' || !flRef.current) {
-        return;
+    });
+    const enableMvcpWithRetriesRef = useRef(() => {
+      // debounce to wait till consecutive mvcp enabling
+      // this ensures that always previous handles are disabled first
+      if (debounceTimeoutId.current) {
+        clearTimeout(debounceTimeoutId.current);
       }
+      debounceTimeoutId.current = setTimeout(async () => {
+        // disable any previous enabled handles
+        await disableMvcpRef.current();
 
-      /**
-       * If the enableMaintainVisibleContentPosition has already been called, then
-       * lets not call it again, unless prop values of mvcp changed.
-       *
-       * This condition is important since `resetMvcpIfNeeded` gets called in refCallback,
-       * which gets called by react on every update to list.
-       */
-      if (isMvcpEnabled.current && !hasMvcpChanged) {
-        return;
-      }
-      autoscrollToTopThreshold.current = propAutoscrollToTopThreshold;
-      minIndexForVisible.current = propMinIndexForVisible;
+        if (
+          !flRef.current ||
+          !isMvcpPropPresentRef.current ||
+          isMvcpEnabledNative.current ||
+          Platform.OS !== 'android'
+        ) {
+          return;
+        }
+        const scrollableNode = flRef.current.getScrollableNode();
 
-      isMvcpEnabled.current = true;
-      disableMvcp().then(enableMvcpWithRetries);
-    };
-
-    const refCallback: (instance: FlatList<T> | null) => void = (ref) => {
-      flRef.current = ref;
-
-      resetMvcpIfNeeded();
-      if (typeof forwardedRef === 'function') {
-        forwardedRef(ref);
-      } else if (forwardedRef) {
-        forwardedRef.current = ref;
-      }
-    };
+        try {
+          const _handle: number = await ScrollViewManager.enableMaintainVisibleContentPosition(
+            scrollableNode,
+            autoscrollToTopThreshold.current,
+            minIndexForVisible.current
+          );
+          handle.current = _handle;
+        } catch (error: any) {
+          /**
+           * enableMaintainVisibleContentPosition from native module may throw IllegalViewOperationException,
+           * in case view is not ready yet. In that case, lets do a retry!! (max of 10 tries)
+           */
+          if (enableMvcpRetriesCount.current < 10) {
+            retryTimeoutId.current = setTimeout(
+              enableMvcpWithRetriesRef.current,
+              100
+            );
+            enableMvcpRetriesCount.current += 1;
+          }
+        }
+      }, 300);
+    });
 
     useEffect(() => {
-      // disable before unmounting
+      // when the mvcp prop changes
+      // enable natively again, if the prop has changed
+      const propAutoscrollToTopThreshold =
+        props.maintainVisibleContentPosition?.autoscrollToTopThreshold ||
+        -Number.MAX_SAFE_INTEGER;
+      const propMinIndexForVisible =
+        props.maintainVisibleContentPosition?.minIndexForVisible || 1;
+      const hasMvcpChanged =
+        autoscrollToTopThreshold.current !== propAutoscrollToTopThreshold ||
+        minIndexForVisible.current !== propMinIndexForVisible ||
+        isMvcpPropPresentRef.current !== !!props.maintainVisibleContentPosition;
+
+      if (hasMvcpChanged) {
+        enableMvcpRetriesCount.current = 0;
+        autoscrollToTopThreshold.current = propAutoscrollToTopThreshold;
+        minIndexForVisible.current = propMinIndexForVisible;
+        isMvcpPropPresentRef.current = !!props.maintainVisibleContentPosition;
+        enableMvcpWithRetriesRef.current();
+      }
+    }, [props.maintainVisibleContentPosition]);
+
+    const refCallback = useRef<(instance: FlatList<T> | null) => void>(
+      (ref) => {
+        flRef.current = ref;
+        enableMvcpWithRetriesRef.current();
+        if (typeof forwardedRef === 'function') {
+          forwardedRef(ref);
+        } else if (forwardedRef) {
+          forwardedRef.current = ref;
+        }
+      }
+    ).current;
+
+    useEffect(() => {
+      const disableMvcp = disableMvcpRef.current;
       return () => {
+        // clean up the retry mechanism
+        if (debounceTimeoutId.current) {
+          clearTimeout(debounceTimeoutId.current);
+        }
+        // clean up any debounce
+        if (debounceTimeoutId.current) {
+          clearTimeout(debounceTimeoutId.current);
+        }
         disableMvcp();
       };
     }, []);
