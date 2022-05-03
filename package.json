@@ -4,7 +4,7 @@
   "description": "`maintainVisibleContentPosition` support for Android react-native",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
-  "types": "lib/typescript/src/index.d.ts",
+  "types": "lib/typescript/index.d.ts",
   "react-native": "src/index",
   "source": "src/index",
   "files": [
@@ -15,12 +15,14 @@
     "cpp",
     "mvcp-scroll-view-manager.podspec",
     "!lib/typescript/Example",
+    "!android/build",
+    "!ios/build",
     "!**/__tests__",
     "!**/__fixtures__",
     "!**/__mocks__"
   ],
   "scripts": {
-    "build": "rm -rf lib && bob build && rm lib/module/index.js && rm lib/commonjs/index.js",
+    "prepare": "bob build",
     "test": "jest",
     "typescript": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
@@ -28,8 +30,7 @@
     "release": "release-it",
     "example": "yarn --cwd example",
     "pods": "cd example && pod-install --quiet",
-    "bootstrap": "yarn example && yarn && yarn pods",
-    "prepare": "yarn build"
+    "bootstrap": "yarn example && yarn && yarn pods"
   },
   "keywords": [
     "react-native",
@@ -48,7 +49,6 @@
     "@react-native-community/eslint-config": "^2.0.0",
     "@release-it/conventional-changelog": "^1.1.4",
     "@types/jest": "^26.0.0",
-    "@types/lodash": "^4.14.168",
     "@types/react": "^16.9.19",
     "@types/react-native": "0.63.50",
     "commitlint": "^8.3.5",
@@ -59,9 +59,9 @@
     "jest": "^26.0.1",
     "pod-install": "^0.1.0",
     "prettier": "^2.0.5",
-    "react": "16.11.0",
-    "react-native": "0.62.2",
-    "react-native-builder-bob": "^0.17.1",
+    "react": "16.13.1",
+    "react-native": "0.63.4",
+    "react-native-builder-bob": "^0.18.2",
     "release-it": "^13.5.8",
     "typescript": "^4.1.4"
   },
@@ -138,7 +138,12 @@
     "targets": [
       "commonjs",
       "module",
-      "typescript"
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
     ]
   }
 }
