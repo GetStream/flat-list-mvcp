@@ -8,13 +8,18 @@ import {
 } from 'react-native';
 import {FlatList} from '@stream-io/flat-list-mvcp';
 
-const AddMoreButton = ({onPress}) => (
+type Item = {
+  id: string;
+  value: number;
+};
+
+const AddMoreButton = ({onPress}: {onPress: () => void}) => (
   <TouchableOpacity onPress={onPress} style={styles.addMoreButton}>
     <Text style={styles.addMoreButtonText}>Add 5 items from this side</Text>
   </TouchableOpacity>
 );
 
-const ListItem = ({item}) => (
+const ListItem = ({item}: {item: Item}) => (
   <View style={styles.listItem}>
     <Text>List item: {item.value}</Text>
   </View>
@@ -24,7 +29,7 @@ const ListItem = ({item}) => (
 export const generateUniqueKey = () =>
   `_${Math.random().toString(36).substr(2, 9)}`;
 
-export default () => {
+const FlatListExample = () => {
   const [numbers, setNumbers] = useState(
     Array.from(Array(10).keys()).map((n) => ({
       id: generateUniqueKey(),
@@ -34,10 +39,12 @@ export default () => {
 
   const addToEnd = () => {
     setNumbers((prev) => {
-      const additionalNumbers = Array.from(Array(5).keys()).map((n) => ({
-        id: generateUniqueKey(),
-        value: n + prev[prev.length - 1].value + 1,
-      }));
+      const additionalNumbers: Item[] = Array.from(Array(5).keys()).map(
+        (n) => ({
+          id: generateUniqueKey(),
+          value: n + prev[prev.length - 1].value + 1,
+        }),
+      );
 
       return prev.concat(additionalNumbers);
     });
@@ -73,6 +80,8 @@ export default () => {
     </SafeAreaView>
   );
 };
+
+export default FlatListExample;
 
 const styles = StyleSheet.create({
   safeArea: {

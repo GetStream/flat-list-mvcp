@@ -9,19 +9,19 @@ import {
 
 import {ScrollView} from '@stream-io/flat-list-mvcp';
 
-const AddMoreButton = ({onPress}) => (
+const AddMoreButton = ({onPress}: {onPress: () => void}) => (
   <TouchableOpacity onPress={onPress} style={styles.addMoreButton}>
     <Text style={styles.addMoreButtonText}>Add 5 items from this side</Text>
   </TouchableOpacity>
 );
 
-const ListItem = ({item}) => (
+const ListItem = ({item}: {item: number}) => (
   <View style={styles.listItem}>
     <Text>List item: {item}</Text>
   </View>
 );
 
-export default () => {
+const ScrollViewExample = () => {
   const [numbers, setNumbers] = useState(Array.from(Array(10).keys()));
 
   const addToEnd = () => {
@@ -62,6 +62,8 @@ export default () => {
     </SafeAreaView>
   );
 };
+
+export default ScrollViewExample;
 
 const styles = StyleSheet.create({
   safeArea: {
