@@ -1,3 +1,5 @@
+> **On React Native 0.72 or later you don't need this package.** `FlatList` supports `maintainVisibleContentPosition` on Android natively from 0.72. This package is for older React Native versions and is no longer actively developed.
+
 # `maintainVisibleContentPosition` prop support for Android react-native.
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/GetStream/flat-list-mvcp/blob/main/LICENSE)
